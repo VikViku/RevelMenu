@@ -1,0 +1,34 @@
+{% extends 'menu/base.html' %}
+
+
+{% block login_block %}
+    <a href="{% url 'login' %}">Log in</a>
+{% endblock %}
+
+{% block logout_block %}
+    <a href="{% url 'logout' %}">Log out</a>
+{% endblock %}
+
+
+{% block category_edit_a %}
+    <a href="{% url 'cat_edit' pk=node.id %}">{{ node.name }}</a> <span>     ({{ node.o_count }})
+{% endblock %}
+
+{% block category_edit_na %}
+    {{ node.name }} <span>     ({{ node.o_count }})
+{% endblock %}
+
+{% block product_edit_a %}
+   <a href="{% url 'prod_edit' pk=pr.id %}">{{ pr.name }}</a> (€{{ pr.price }}) </br>
+{% endblock %}
+
+{% block product_edit_na %}
+    {{ pr.name }} (€{{ pr.price }}) </br>
+{% endblock %}
+
+{% block create %}
+	<div>
+		<a href="{% url 'cat_new' %}">New Category</a></br>
+		<a href="{% url 'prod_new' %}">New Product</a>
+	</div>
+{% endblock %}

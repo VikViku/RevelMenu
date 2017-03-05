@@ -1,0 +1,57 @@
+{% load mptt_tags %}
+{% load lookup %}
+
+
+{% if user.is_authenticated %}
+
+	{% block logout_block %}
+	{% endblock %}
+
+	<ul>
+	{% recursetree category_product_list %}
+	    <li>
+	        {% block category_edit_a %}
+	        {% endblock %}
+            <ul class="children">
+                {{ children }}
+            </ul>
+            <ul class="children">
+                {% for pr in prd3|lookup:node.id %}
+                    {% block product_edit_a %}
+                    {% endblock %}
+                {% endfor %}
+            </ul>                
+	    </li>
+	{% endrecursetree %}
+	</ul>
+
+	{% block create %}
+	{% endblock %}
+
+{% else %}
+
+	{% block login_block %}
+	{% endblock %}
+
+	<ul>
+	    {% recursetree category_product_list %}
+	        {% if node.active %}
+	        <li>
+	            {% block category_edit_na %}
+	            {% endblock %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+                <ul class="children">
+                    {% for pr in prd3|lookup:node.id %}
+                        {% block product_edit_na %}
+                        {% endblock %}
+                    {% endfor %}
+                </ul>                
+	        </li>
+	        {% endif %}
+	    {% endrecursetree %}
+	</ul>
+
+{% endif %}
+
