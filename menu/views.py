@@ -4,7 +4,7 @@ from django.views.generic import ListView
 from .models import Category, Product
 from .forms import CategoryForm, ProductForm
 from django.contrib.auth.models import User
-
+from collections import defaultdict
 
 class CategoryListView(ListView):
     model = Category
@@ -13,12 +13,31 @@ class CategoryListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(CategoryListView, self).get_context_data(**kwargs)
-        context['category_product_list'] = Category.objects.add_related_count(Category.objects.all(), Product,'category','o_count',cumulative=True)
-        cat_pr_dict = {}
-        for ca in context['category_product_list']:
-            pc = Product.objects.filter(category=ca)
-            cat_pr_dict[ca.id] = pc
-        context['prd3'] = cat_pr_dict 
+        category_product_list = Category.objects.add_related_count(Category.objects.all(), Product,'category','o_count',cumulative=True)
+        category_product_list_nc = Category.objects.add_related_count(Category.objects.all(), Product,'category','o_count',cumulative=False)
+        context['category_product_list'] = category_product_list
+        cat_count = {}
+
+        for ca in category_product_list_nc:
+            cat_count[ca.id] = ca.o_count
+
+        product_sort_cn = Product.objects.order_by('category','name')
+        p = Product.objects.count()
+        first = 0   #first postition of specific category in product_sort_cn
+        last = 0   #last position of specific category in product_sort_cn
+        cat_pr_dict = {} 
+        cat_pr_dict = defaultdict(lambda : None)
+
+        while last<p:
+        	first = last
+        	k = product_sort_cn[first].category
+        	count = cat_count[k.id]
+        	last = first + count
+        	pc = product_sort_cn[first:last]
+        	cat_pr_dict[k.id] = pc
+
+
+        context['prd3'] = cat_pr_dict
         return context
 
 
@@ -69,5 +88,3 @@ def prod_edit(request, pk):
 
 
 # Create your views here.
-
-
